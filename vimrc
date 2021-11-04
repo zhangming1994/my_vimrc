@@ -4,6 +4,17 @@ let mapleader=";"
 " 开启文件类型检测
 filetype on
 
+" 函数跳转
+let g:godef_split=2
+
+" ycm配置
+set completeopt=longest,menu                    " 让Vim的补全菜单行为与一般IDE一致(参考VimTip1228)
+let g:ycm_min_num_of_chars_for_completion=2             " 从第2个键入字符就开始罗列匹配项
+let g:ycm_cache_omnifunc=0                      " 禁止缓存匹配项,每次都重新生成匹配项
+let g:ycm_autoclose_preview_window_after_completion=1       " 智能关闭自动补全窗口
+autocmd InsertLeave * if pumvisible() == 0|pclose|endif         " 离开插入模式后自动关闭预览窗口
+
+
 " 跳到一行的头部[normal模式]
 nmap b 0
 nmap e $
@@ -15,10 +26,6 @@ imap <Leader>h <Left>
 imap <Leader>r <Right>
 imap <Leader>k <Up>
 
-
-" 根据检测到的不同的类型的文件加载对应的插件
-filetype plugin on
-
 " 让配置立即生效
 autocmd BufWritePost $MYVIMRC source $MYVIMRC
 
@@ -27,6 +34,9 @@ set incsearch
 
 " ;e 替换 Esc
 inoremap <Leader>e <Esc>
+imap <Leader>e <Esc>
+vmap <Leader>e <Esc>
+
 
 " 搜索的时候大小写不敏感
 set ignorecase
@@ -104,9 +114,6 @@ syntax on
 " 允许用指定语法高亮配色方案替换默认方案
 syntax on
 
-" 自适应不同语言的智能缩进
-filetype indent on
-
 " 将制表符扩展为空格
 set expandtab
 
@@ -130,7 +137,7 @@ set softtabstop=2
 
 
 " 插入模式下自动补全花括号
-imap { {}<ESC>i<CR><ESC>V<O
+imap { {}<ESC>i<CR><CR><ESC>
 
 " 使得terminal的光标变为细线，而不是默认的粗条。这个在vim的普通模式和插入模式都会生效。
 set gcr=n-v-c:ver25-Cursor/lCursor,ve:ver35-Cursor,o:hor50-Cursor,i-ci:ver25-Cursor/lCursor
@@ -256,11 +263,6 @@ nnoremap gv `[v`]
 nnoremap <leader>v V`}
 
 
-" ;j 替换 Esc
-inoremap <Leader>j <Esc>
-
-
-
 " change the terminal's title
 set title
 " 去掉输入错误的提示声音
@@ -324,46 +326,65 @@ highlight SpellRare term=underline cterm=underline
 highlight clear SpellLocal
 highlight SpellLocal term=underline cterm=underline
 
+" 自适应不同语言的智能缩进
+filetype indent on
 
-" 定义函数AutoSetFileHead，自动插入文件头
-autocmd BufNewFile *.sh,*.py exec ":call AutoSetFileHead()"
-function! AutoSetFileHead()
-    "如果文件类型为.sh文件
-    if &filetype == 'sh'
-        call setline(1, "\#!/bin/bash")
-    endif
+" 刚刚打开的文件的切换 不同的tab之间 这种针对的是有tab的那种开着的进行切换
+" 右上角那种不同tab的切换可以切换到buffer里面 按⬇️ 然后enter就可以切换 这种方式针对的是仅仅在缓存区存在的打开过的文件
+" noremap <C-Tab> :tabnext<CR>
+" noremap <C-S-Tab> :tabprev<CR> 
 
-    "如果文件类型为python
-    if &filetype == 'python'
-        " call setline(1, "\#!/usr/bin/env python")
-        " call append(1, "\# encoding: utf-8")
-        call setline(1, "\# -*- coding: utf-8 -*-")
-    endif
+if has("gui_macvim")
+  " Press Ctrl-Tab to switch between open tabs (like browser tabs) to 
+  " the right side. Ctrl-Shift-Tab goes the other way.
+  noremap <C-Tab> :tabnext<CR>
+  noremap <C-S-Tab> :tabprev<CR>
 
-    normal G
-    normal o
-    normal o
-endfunc
-
-
-
+  " Switch to specific tab numbers with Command-number
+  inoremap <D-1> :tabn 1<CR>
+  inoremap <D-2> :tabn 2<CR>
+  inoremap <D-3> :tabn 3<CR>
+  inoremap <D-4> :tabn 4<CR>
+  inoremap <D-5> :tabn 5<CR>
+  inoremap <D-6> :tabn 6<CR>
+  inoremap <D-7> :tabn 7<CR>
+  inoremap <D-8> :tabn 8<CR>
+  inoremap <D-9> :tabn 9<CR>
+  " Command-0 goes to the last tab
+  inoremap <D-0> :tablast<CR>
+endif
 
 
 " 插件设置
-filetype off
-set rtp+=~/.vim/bundle/Vundle.vim
 " vundle 管理的插件列表必须位于 call vundle#begin() 和 call vundle#end() 之间
+filetype off
+set rtp+=~/.vim/bundle/Vundle.vim  
 call vundle#begin()
+
+" 插件管理包
 Plugin 'VundleVim/Vundle.vim'
+" 主题颜色配置
 Plugin 'altercation/vim-colors-solarized'
+" molokai主题配置
 Plugin 'tomasr/molokai'
+"
 Plugin 'vim-scripts/phd'
 Plugin 'Lokaltog/vim-powerline'
 Plugin 'octol/vim-cpp-enhanced-highlight'
 Plugin 'nathanaelkane/vim-indent-guides'
+
+" 标签展示快速跳转
 Plugin 'kshenoy/vim-signature'
+
 Plugin 'vim-scripts/BOOKMARKS--Mark-and-Highlight-Full-Lines'
+
+" tagbar 为正在编辑的文件生成一个大纲 包含类/方法/变量等 可以快速跳转到选中的目标位置
 Plugin 'majutsushi/tagbar'
+" tagbar的快捷配置
+nmap <leader>tt :TagbarToggle<CR>
+" 启动时自动focus
+let g:tagbar_autofocus = 1
+
 Plugin 'vim-scripts/indexer.tar.gz'
 Plugin 'vim-scripts/DfrankUtil'
 Plugin 'vim-scripts/vimprj'
@@ -372,25 +393,34 @@ Plugin 'terryma/vim-multiple-cursors'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'vim-scripts/DrawIt'
 Plugin 'SirVer/ultisnips'
-Plugin 'Valloric/YouCompleteMe'
+" Plugin 'Valloric/YouCompleteMe',{'do':'python3 install.py'} 这个好像已经不存在了 进行了替换
+Plugin 'ycm-core/YouCompleteMe'
 Plugin 'derekwyatt/vim-protodef'
 Plugin 'scrooloose/nerdtree'
 Plugin 'fholgado/minibufexpl.vim'
 Plugin 'gcmt/wildfire.vim'
 Plugin 'Lokaltog/vim-easymotion'
 Plugin 'suan/vim-instant-markdown'
+
 " 自动引入包
 Plugin 'bradfitz/goimports'
+
 let g:gofmt_command = "goimports"  
-autocmd BufWritePre *.go :Fmt
+" autocmd BufWritePre *.go :Fmt
+
 " 跳函数方法定义处
 Plugin 'dgryski/vim-godef'
-" gocode
-Plugin 'nsf/gocode'
-Plugin 'Blackrush/vim-gocode'
+
 " 代码高亮和语法检查
 Plugin 'fatih/vim-go'
+
+" gocode 代码提示 格式化
+Plugin 'nsf/gocode'
+" Plugin 'Blackrush/vim-gocode'
+
 " 插件列表结束
 call vundle#end()
+
 filetype plugin indent on
+
 
