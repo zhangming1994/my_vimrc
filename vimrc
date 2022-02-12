@@ -5,7 +5,10 @@ let mapleader=";"
 filetype on
 
 " 函数跳转
-let g:godef_split=2
+let g:godef_split=4
+let g:godef_same_file_in_same_window=1
+" g+d 跳转到函数定义的地方
+" ctrl+o 跳转到刚刚上一步的位置 
 
 " ycm配置
 set completeopt=longest,menu                    " 让Vim的补全菜单行为与一般IDE一致(参考VimTip1228)
@@ -422,5 +425,3 @@ Plugin 'nsf/gocode'
 call vundle#end()
 
 filetype plugin indent on
-
-
