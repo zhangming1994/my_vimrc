@@ -7,8 +7,39 @@ filetype on
 " 函数跳转
 let g:godef_split=4
 let g:godef_same_file_in_same_window=1
-" g+d 跳转到函数定义的地方
-" ctrl+o 跳转到刚刚上一步的位置 
+" g+d / jt 跳转到函数定义的地方
+" ctrl+o/ jb 跳转到刚刚上一步的位置 
+
+" vim-go 设置
+nmap <Leader>s <Plug>(go-implements)
+
+ let g:go_highlight_functions = 1
+ let g:go_highlight_methods = 1
+  let g:go_highlight_fields = 1
+  let g:go_highlight_types = 1
+  let g:go_highlight_operators = 1
+  let g:go_highlight_build_constraints = 1
+ let g:go_fmt_command = "goimports"
+  let g:go_list_type = "quickfix"
+ " let g:go_def_mode = 'godef'
+ let g:godef_split=2
+
+" 快速跳转
+let g:EasyMotion_smartcase = 1
+let g:EasyMotion_startofline = 0 " keep cursor colum when JK motion
+" ,,h 显示往前可快速移动的点
+ nmap <Leader><leader>h <Plug>(easymotion-linebackward)
+" ,,j 显示往下可快速移动的点
+ nmap <Leader><Leader>j <Plug>(easymotion-j)
+" ,,k 显示往上可快速移动的点
+ nmap <Leader><Leader>k <Plug>(easymotion-k)
+" ,,l 显示往后可快速移动的点
+ nmap <Leader><leader>l <Plug>(easymotion-lineforward)
+" ,,. 显示上一次可快速移动的点
+ nmap <Leader><leader>. <Plug>(easymotion-repeat)
+
+nmap jt <c-]> 
+map jb <c-o>
 
 " ycm配置
 set completeopt=longest,menu                    " 让Vim的补全菜单行为与一般IDE一致(参考VimTip1228)
@@ -51,6 +82,11 @@ set hlsearch
 
 " 关键兼容模式
 set nocompatible
+
+" 自动保存
+set autowrite
+" 自动读取文件(如果文本改变，自动更新
+set autoread
 
 " vim 自身的命令行模式智能补全
 set wildmenu
@@ -129,6 +165,27 @@ set shiftwidth=2
 " 让 vim 把连续数量的空格视为一个制表符
 set softtabstop=2
 
+
+" 多个窗口 用Ctr加 jkhl切换
+map <C-j> <C-W>j
+map <C-k> <C-W>k
+map <C-h> <C-W>h
+map <C-l> <C-W>l
+
+" Command + / 加注释
+map <D-/> :TComment<CR>
+vmap <D-/> :TComment<CR>g
+
+" go 相关快捷键
+nmap <Leader>gc :GoErrCheck<CR>
+nmap <Leader>gb :GoBuild<CR>
+nmap <Leader>gd :GoDoc<CR>
+nmap <Leader>gt :GoTest<CR>
+nmap <Leader>gi :GoInstall<CR>
+nmap <Leader>gr :GoRename<CR>
+nmap <Leader>gl :GoLint<CR>
+nmap <Leader>gf :GoFillStruct<CR>
+
 " 缩进可视化随 vim 自启动
 " let g:indent_guides_enable_on_vim_startup=1
 
@@ -140,7 +197,7 @@ set softtabstop=2
 
 
 " 插入模式下自动补全花括号
-imap { {}<ESC>i<CR><CR><ESC>
+" imap { {}<ESC>i<CR><CR><ESC>
 
 " 使得terminal的光标变为细线，而不是默认的粗条。这个在vim的普通模式和插入模式都会生效。
 set gcr=n-v-c:ver25-Cursor/lCursor,ve:ver35-Cursor,o:hor50-Cursor,i-ci:ver25-Cursor/lCursor
@@ -155,8 +212,8 @@ set foldenable
 " syntax    使用语法定义折叠
 " diff      对没有更改的文本进行折叠
 " marker    使用标记进行折叠, 默认标记是 {{{ 和 }}}
-set foldmethod=indent
-set foldlevel=99
+" set foldmethod=indent
+" set foldlevel=99
 
 " 代码折叠自定义快捷键 <leader>zz
 let g:FoldMethod = 0
@@ -212,9 +269,12 @@ set shiftwidth=4
 set softtabstop=4
 
 
+"=======================================================================
 
+" NERDTRee设置
 
-" 文件浏览设置
+"======================================================================
+
 " c系列的在接口和实现之间进行切换
 nmap <silent> <Leader>sw :FSHere<cr>
 " 使用 NERDTree 插件查看工程文件。设置快捷键，r 刷新目录 ，I 显示隐藏文件 
@@ -224,7 +284,7 @@ let NERDTreeWinSize=32
 " 设置NERDTree子窗口位置
 let NERDTreeWinPos="left"
 " 显示隐藏文件
-" let NERDTreeShowHidden=1
+let NERDTreeShowHidden=1
 " NERDTree 子窗口中不显示冗余帮助信息
 let NERDTreeMinimalUI=1
 " 删除文件时自动删除文件对应 buffer
@@ -238,6 +298,34 @@ map <Leader>d :MBEbp<cr>
 set autoread
 " 启动的时候关闭那个援助提示
 set shortmess=atI
+
+
+" ctrl+w+w 光标在左右窗口切换
+" ctrl+w+r 切换当前窗口左右布局
+
+
+" 忽略一下文件的显示
+let NERDTreeIgnore=['\.pyc','\~$','\.swp']
+let g:NERDTreeIndicatorMapCustom = {
+    \ "Modified"  : "✹",
+    \ "Staged"    : "✚",
+    \ "Untracked" : "✭",
+    \ "Renamed"   : "➜",
+    \ "Unmerged"  : "═",
+    \ "Deleted"   : "✖",
+    \ "Dirty"     : "✗",
+    \ "Clean"     : "✔︎",
+    \ 'Ignored'   : '☒',
+    \ "Unknown"   : "?"
+    \ }
+" }}}
+
+" md + y 删除文件
+" mm 修改文件
+" ma 创建文件
+" u  打开上层目录
+" s 水平分割打开
+" i 横着切屏打开
 
 
 " 启用鼠标
@@ -294,6 +382,38 @@ nmap <Leader>q :qa!<CR>
 nmap <Leader>w :w<CR>
 " 保存当前窗口内容并退出
 nmap <Leader>wq :w<CR>:q<CR>
+
+
+"==============================================================================
+" GVim 的配置
+"==============================================================================
+" 如果不使用 GVim ，可以不用配置下面的配置
+if has('gui_running')
+        colorscheme solarized
+    " 设置启动时窗口的大小
+    set lines=999 columns=999 linespace=4
+
+    " 设置字体及大小
+        set guifont=Roboto\ Mono\ 13
+
+    set guioptions-=m " 隐藏菜单栏
+    set guioptions-=T " 隐藏工具栏
+    set guioptions-=L " 隐藏左侧滚动条
+    set guioptions-=r " 隐藏右侧滚动条
+    set guioptions-=b " 隐藏底部滚动条
+            " 在 gvim 下不会和 terminal 的 alt+数字的快捷键冲突，
+    " 所以将 tab 切换配置一份 alt+数字的快捷键
+    :nn <M-1> 1gt
+    :nn <M-2> 2gt
+    :nn <M-3> 3gt
+    :nn <M-4> 4gt
+    :nn <M-5> 5gt
+    :nn <M-6> 6gt
+    :nn <M-7> 7gt
+    :nn <M-8> 8gt
+        :nn <M-9> 9gt
+        :nn <M-0> :tablast<CR>
+endif
 
 
 " 设置环境保存项
@@ -358,6 +478,35 @@ if has("gui_macvim")
 endif
 
 
+" clang-format 配置
+" nmap <Leader>C :ClangFormat<CR>
+" let g:clang_format#auto_format_on_insert_leave=1 
+" let g:clang_format#auto_filetypes = ["c", "cpp", "objc", "java", "javascript", "typescript", "proto", "arduino"]
+
+" tagbar的快捷配置
+nmap <leader>tt :TagbarToggle<CR>
+" 启动时自动focus
+let g:tagbar_autofocus = 1
+
+let g:gofmt_command = "goimports"  
+" autocmd BufWritePre *.go :Fmt
+"
+" 向右切分窗口
+set splitright
+" 向下切分窗口
+set splitbelow
+
+
+" Markdown 实时预览
+" 1. 不进行实时预览
+let g:instant_markdown_slow = 1 
+" 会不会在浏览器开启预览 不希望用0 
+let g:instant_markdown_autostart = 0
+map <leader>y :InstantMarkdownPreview<CR>
+
+
+
+
 " 插件设置
 " vundle 管理的插件列表必须位于 call vundle#begin() 和 call vundle#end() 之间
 filetype off
@@ -366,11 +515,13 @@ call vundle#begin()
 
 " 插件管理包
 Plugin 'VundleVim/Vundle.vim'
+
 " 主题颜色配置
 Plugin 'altercation/vim-colors-solarized'
+
 " molokai主题配置
 Plugin 'tomasr/molokai'
-"
+
 Plugin 'vim-scripts/phd'
 Plugin 'Lokaltog/vim-powerline'
 Plugin 'octol/vim-cpp-enhanced-highlight'
@@ -379,14 +530,14 @@ Plugin 'nathanaelkane/vim-indent-guides'
 " 标签展示快速跳转
 Plugin 'kshenoy/vim-signature'
 
-Plugin 'vim-scripts/BOOKMARKS--Mark-and-Highlight-Full-Lines'
+" Plugin 'vim-scripts/BOOKMARKS--Mark-and-Highlight-Full-Lines'
 
 " tagbar 为正在编辑的文件生成一个大纲 包含类/方法/变量等 可以快速跳转到选中的目标位置
 Plugin 'majutsushi/tagbar'
-" tagbar的快捷配置
-nmap <leader>tt :TagbarToggle<CR>
-" 启动时自动focus
-let g:tagbar_autofocus = 1
+
+
+" 快速移动（跳转）
+Plugin 'Lokaltog/vim-easymotion'
 
 Plugin 'vim-scripts/indexer.tar.gz'
 Plugin 'vim-scripts/DfrankUtil'
@@ -396,20 +547,22 @@ Plugin 'terryma/vim-multiple-cursors'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'vim-scripts/DrawIt'
 Plugin 'SirVer/ultisnips'
-" Plugin 'Valloric/YouCompleteMe',{'do':'python3 install.py'} 这个好像已经不存在了 进行了替换
 Plugin 'ycm-core/YouCompleteMe'
 Plugin 'derekwyatt/vim-protodef'
 Plugin 'scrooloose/nerdtree'
 Plugin 'fholgado/minibufexpl.vim'
 Plugin 'gcmt/wildfire.vim'
-Plugin 'Lokaltog/vim-easymotion'
-Plugin 'suan/vim-instant-markdown'
+
+
+
+" proto 高亮显示
+Plugin 'uarun/vim-protobuf'
 
 " 自动引入包
 Plugin 'bradfitz/goimports'
 
-let g:gofmt_command = "goimports"  
-" autocmd BufWritePre *.go :Fmt
+" clang-format
+" Plugin 'rhysd/vim-clang-format'
 
 " 跳函数方法定义处
 Plugin 'dgryski/vim-godef'
@@ -417,9 +570,20 @@ Plugin 'dgryski/vim-godef'
 " 代码高亮和语法检查
 Plugin 'fatih/vim-go'
 
+" Vim状态栏插件，包括显示行号，列号，文件类型，文件名，以及Git状态
+Plugin 'vim-airline/vim-airline'
+
 " gocode 代码提示 格式化
 Plugin 'nsf/gocode'
 " Plugin 'Blackrush/vim-gocode'
+
+
+" markdown语法高亮 安装node npm. npm -g install instant-markdown-d
+" Plugin 'plasticboy/vim-markdown'
+" Plugin 'godlygeek/tabular'
+
+" markdown实时预览插件
+" Plugin 'instant-markdown/instant-markdown-d'
 
 " 插件列表结束
 call vundle#end()
